@@ -50,11 +50,10 @@ const AccountTransferDetails = ({route, navigation}, props) => {
 
     const MakePayment = async () => {
       let bal = items.find(o => o.value === value)
-      console.log(bal);
+     
       let headersList = {
         "Content-Type": "application/json"
       }
-      console.log(value, Account_number, amount, bal.balance, Balance);
 
       let bodyContent = JSON.stringify({
         "accountNumber": value,

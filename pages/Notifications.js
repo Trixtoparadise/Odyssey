@@ -1,27 +1,68 @@
-import { View } from 'react-native';
+import React from 'react';
 import { Divider } from '@rneui/themed';
+import { FlatList, Text, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
 import CustomHeading from '../components/CustomHeading';
 import CustomSearchBar from '../components/CustomSearchBar';
 import NotificationInfo from '../components/NotificationInfo';
 
+const Item = ({title}) => (
+    <View>
+        <NotificationInfo Notification={title}/>
+    </View>
+);
+
 const Notifications = () => {
+    const [data, setData] = React.useState([]);
+
+    React.useEffect(() => {
+        const handleAccounts = async () => {
+            try{    
+                let response = await fetch("http://10.10.17.11:5000/api/getnotifications", { 
+                    method: "GET",
+                });
+                
+                let data = await response.json();
+                setData(data);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        handleAccounts();
+    }, []);
+
     return (
-        <View style={{backgroundColor: 'white', width: '100%', height: '100%'}}>
-            <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
-            <View style={{ marginHorizontal: 30, marginTop: 20}}>
-        
-              <CustomHeading Title='Notifications'/>               
-              <CustomSearchBar Title='Search Notifications'/>
-
-              <NotificationInfo Notification='Odyssey Bank: Money in +R168.20. Ref: Mr H Mhlanga, 10:39 PM, Pretoria'/>
-              <NotificationInfo Notification='Odyssey Bank: Money in +R168.20. Ref: Mr H Mhlanga, 10:39 PM, Pretoria'/>
-              <NotificationInfo Notification='Odyssey Bank: Money in +R168.20. Ref: Mr H Mhlanga, 10:39 PM, Pretoria'/>
-              <NotificationInfo Notification='Odyssey Bank: Money in +R168.20. Ref: Mr H Mhlanga, 10:39 PM, Pretoria'/>
-              
+        <>
+            <View style={{backgroundColor: 'white', width: '100%', height: '100%'}}>
+                <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+                <View style={{ marginHorizontal: 30, marginTop: 20, height: '80%'}}>
+                    <CustomHeading Title='Transactions'/>
+                    <CustomSearchBar Title="Search transaction"/>
+                    <FlatList 
+                        data={data}
+                        renderItem={({item}) =>
+                            <TouchableOpacity onPress={() => navigation.navigate('TransactionDetails', {Date: item.Date, Description: item.Description, Ref: Math.floor(Math.random() * 100000000), Time: item.Time, Balance: item.Balance})}> 
+                                <Item title={item.title}/>
+                            </TouchableOpacity>
+                        }
+                        keyExtractor={item => item.id}
+                    />
+                </View>
             </View>
-
-        </View>
+        </> 
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        marginTop: StatusBar.currentHeight || 0,
+
+    },
+    title: {
+        fontSize: 15,
+        color: 'rgba(0, 44, 106, 255)',
+    },
+})
+
 
 export default Notifications;

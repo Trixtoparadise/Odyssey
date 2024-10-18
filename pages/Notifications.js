@@ -35,12 +35,12 @@ const Notifications = () => {
             <View style={{backgroundColor: 'white', width: '100%', height: '100%'}}>
                 <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
                 <View style={{ marginHorizontal: 30, marginTop: 20, height: '80%'}}>
-                    <CustomHeading Title='Transactions'/>
+                    <CustomHeading Title='Notifications'/>
                     <CustomSearchBar Title="Search transaction"/>
                     <FlatList 
                         data={data}
                         renderItem={({item}) =>
-                            <TouchableOpacity onPress={() => navigation.navigate('TransactionDetails', {Date: item.Date, Description: item.Description, Ref: Math.floor(Math.random() * 100000000), Time: item.Time, Balance: item.Balance})}> 
+                            <TouchableOpacity > 
                                 <Item title={item.title}/>
                             </TouchableOpacity>
                         }

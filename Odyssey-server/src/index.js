@@ -453,6 +453,44 @@ app.get("/api/getTransactions",  async (req, res) => {
 
 
 
+app.post("/api/createNotification", async (req, res) => {
+  try {
+    const transactions = await prisma.transaction.findMany();
+    const notifications = await prisma.notification.findMany();
+
+    if (transactions.length > notifications.length) {
+      for (let index = notifications.length; index < transactions.length; ++index) {
+        await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + transactions[index].Sent_Received + "R" + transactions[index].Amount + ". Ref: " + transactions[index].Member + ", " + transactions[index].Date.toDateString() + ", " + transactions[index].Date.toLocaleTimeString() , ID_number: transactions[index].Transaction_ID}});
+      }
+      res.status(200).json("Notifications created successfully");
+    } else {
+      res.status(200).send("All notifications are available in the database!");
+    }
+    
+  } catch (e) {
+    res.status(500).send('Internal server error');
+  }
+});
+
+app.get("/api/getNotifications",  async (req, res) => {
+  
+  try {
+    const notifications = await prisma.notification.findMany({  
+    });
+
+    if (!notifications) {
+      return res.status(401).send('No notifications');
+    }
+
+    let statements = notifications.map((notification) => {return {id: notification.Notification_ID, title: notification.Message}});
+    res.status(200).json(statements);
+  } catch (error) {
+    res.status(500).send("Internal server error");
+  }
+});
+
+
+
 app.delete("/api/DeleteBeneficiary", async (req, res) => {
   const { accountNumber } = req.body;
 

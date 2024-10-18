@@ -54,4 +54,12 @@ model Transaction {
   Account_number Int
   Sent_Received String
   Transaction_owner Account @relation(fields: [Account_number], references: [Account_number], onDelete: Cascade)
+  Notification Notification[]
+}
+
+model Notification {
+  Notification_ID Int @id @default(autoincrement())
+  Message String
+  ID_number Int
+  Notification_owner Transaction @relation(fields: [ID_number], references: [Transaction_ID], onDelete: Cascade)
 }

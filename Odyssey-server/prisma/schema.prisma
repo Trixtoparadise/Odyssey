@@ -59,7 +59,7 @@ model Transaction {
 
 model Notification {
   Notification_ID Int @id @default(autoincrement())
-  Message String
+  Message String @unique
   ID_number Int
   Notification_owner Transaction @relation(fields: [ID_number], references: [Transaction_ID], onDelete: Cascade)
 }

@@ -6,8 +6,8 @@ const PaymentSuccessful = ({navigation}) => {
     return (
         <>
             <View style={{ backgroundColor: 'white', width: '100%', height: '100%'}}>
-               <View style={{marginHorizontal: 20}}> 
                 <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+               <View style={{marginHorizontal: 20}}> 
                 <Text
                 style={{
                     alignSelf: 'center',

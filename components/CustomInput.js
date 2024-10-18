@@ -4,9 +4,10 @@ import { Text } from 'react-native';
 const CustomInput = (props) => {
     return (
         <>
-            <Text style={{ fontSize: 16,}}>{props.Title}</Text>
+            <Text style={{ fontSize: 16 }}>{props.Title}</Text>
             <Input
                 placeholder={props.placeholder}
+                secureTextEntry={props.secureTextEntry}
                 inputContainerStyle={{
                     backgroundColor: 'white',
                     borderRadius: 15,
@@ -22,6 +23,9 @@ const CustomInput = (props) => {
                 inputStyle={{
                     fontSize: 15,
                 }}
+                errorMessage={props.errorMessage}
+                onChangeText={props.onChange}
+                value={props.value}
             />
         </>
     );

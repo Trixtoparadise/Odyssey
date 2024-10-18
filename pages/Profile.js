@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { View, Text } from 'react-native';
 import { Divider } from '@rneui/themed';
 import ProfileHeading from '../components/ProfileHeading';
@@ -5,7 +6,7 @@ import CustomButton from '../components/CustomButton';
 import React from 'react';
 
 const Profile = ({navigation}) => {
-
+    
     return (        
         
             <View style={{ backgroundColor: 'white', width: '100%', height: '100%'}}>
@@ -23,7 +24,7 @@ const Profile = ({navigation}) => {
                     <CustomButton buttonTitle='Delete Profile' />
                 </View>
 
-                <CustomButton  buttonTitle='Log out' ToWhere={() => navigation.navigate('Login')}/>
+                <CustomButton  buttonTitle='Log out'/>
                 
             </View> 
     );

@@ -1,7 +1,10 @@
-import { View, Text } from 'react-native';
+import { View, Text, Platform } from 'react-native';
 import { Divider } from '@rneui/themed';
 import * as Print from 'expo-print';
-import { shareAsync } from 'expo-sharing';
+import * as Sharing from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+import { StorageAccessFramework } from 'expo-file-system';
 import CustomButton from '../components/CustomButton';
 import React from 'react';
 
@@ -27,14 +30,28 @@ const html = `
 </html>
 `;
 
-const printToFile = async () => {
-    const { uri } = await Print.printToFileAsync({ html });
-    console.log('File has been saved to:', uri);
-    await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
-}
+const createAndSavePDF = async () => {
+    const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
+        if (!permissions.granted) {
+            return;
+        } 
 
-const TransactionDetails = ({navigation}) => {
+    try {
+        await StorageAccessFramework.createFileAsync(permissions.directoryUri, 'file', 'application/pdf')
+            .then(async(uri) => {
+                await FileSystem.writeAsStringAsync(uri, html, { encoding: FileSystem.EncodingType.Base64 });
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    } catch (e) {
+        throw new Error(e);
+    }
+};
 
+
+const TransactionDetails = ({route, navigation}) => {
+    const {Date, Description, Ref, Time, Balance} = route.params;
     return (        
         
             <View style={{ backgroundColor: 'white', width: '100%', height: '100%'}}>
@@ -54,16 +71,15 @@ const TransactionDetails = ({navigation}) => {
                 </Text>
 
                 <Text style={{marginHorizontal: 15, fontSize: 18, marginVertical: 20, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
-                    Date:                   2024-09-04{"\n"}
-                    Description:       Bill Payment : -R100{"\n"}
-                    Ref:                      Odyssey Bank{"\n"}
-                    Type:                   Fees  Monthly{"\n"}
-                    Time:                   10:39 am{"\n"}
-                    Balance:             R2618.75{"\n"}
+                    Date:                   {Date}{"\n"}
+                    Description:       {Description}{"\n"}
+                    Ref:                      {Ref}{"\n"}
+                    Time:                   {Time}{"\n"}
+                    Balance:             R{Balance}{"\n"}
                 </Text>
 
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignSelf: 'center' }}>
-                    <CustomButton buttonTitle='Save as PDF' ToWhere={printToFile}/>
+                    <CustomButton buttonTitle='Save as PDF' ToWhere={() => createAndSavePDF(html)}/>
                     <CustomButton buttonTitle='Back to Home' ToWhere={() => navigation.navigate('Home')} />
                 </View>                
             </View> 

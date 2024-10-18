@@ -16,7 +16,6 @@ const AccountInfo = (props) => {
                 marginTop: 20,
                 }
             }
-            
         >
         <TouchableOpacity>    
             <Text

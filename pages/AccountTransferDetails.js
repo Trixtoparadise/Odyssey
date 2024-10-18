@@ -74,6 +74,7 @@ const AccountTransferDetails = ({route, navigation}, props) => {
         
         if ( response.status == 200 ) {
           RecordTransaction(data.updatedBalance.Balance, data.updatedRecBalance.Balance ,bal.member);
+          createNotification();
           navigation.navigate('PaymentSuccessful');
         }  
         
@@ -108,6 +109,15 @@ const AccountTransferDetails = ({route, navigation}, props) => {
       } catch (e) {
         console.log(e);
       }
+    }
+
+    const createNotification = async () => {
+      let response = await fetch("http://10.10.17.11:5000/api/createNotification", { 
+        method: "POST",
+      });
+      
+      let data = await response.text();
+      console.log(data);
     }
 
     return (

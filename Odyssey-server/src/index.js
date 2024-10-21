@@ -444,7 +444,7 @@ app.get("/api/getTransactions",  async (req, res) => {
       return res.status(401).send('Invalid credentials');
     }
 
-    let statements = transactions.map((transaction) => {return {Date: transaction.Date.toDateString(), Description: transaction.Sent_Received + " R" + transaction.Amount, Time: transaction.Date.toLocaleTimeString(), Balance: transaction.Balance ,id: Math.floor(Math.random() * 100), title:"AccNo: "  + transaction.Account_number + " , " + transaction.Sent_Received + " R" + transaction.Amount +" "+ "\n" + "Ref: " + Math.floor(Math.random() * 100000000) + " " + transaction.Member + "\n" + transaction.Date}});
+    let statements = transactions.map((transaction) => {return {Date: transaction.Date.toDateString(), Description: transaction.Sent_Received + " R" + transaction.Amount, Time: transaction.Date.toLocaleTimeString(), Balance: transaction.Balance ,id: transaction.Transaction_ID, title:"AccNo: "  + transaction.Account_number + " , " + transaction.Sent_Received + " R" + transaction.Amount +" "+ "\n" + "Ref: " + Math.floor(Math.random() * 100000000) + " " + transaction.Member + "\n" + transaction.Date}});
     res.status(200).json(statements);
   } catch (error) {
     res.status(500).send("Internal server error");

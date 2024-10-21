@@ -18,7 +18,7 @@ const BeneficiariesToPay = ({navigation}) => {
     const [user, setUser] = React.useState(new User("", 0, 0));
     const [beneficiaries, setBeneficiaries] = React.useState([]);
     const listBeneficiaries = beneficiaries.map((beneficiary) =>
-      <AccountInfo key={beneficiary.Account_number} Account={beneficiary.Beneficiary_name + " (" +  beneficiary.Bank + ") " + '\n' + beneficiary.Account_number} ToWhere={() => navigation.navigate('ViewBeneficiary', {User_Id: beneficiary.User_ID, Account_holder: beneficiary.Beneficiary_name, Bank: beneficiary.Bank, Account_number: beneficiary.Account_number})}/>
+      <AccountInfo key={beneficiary.Account_number} Account={beneficiary.Beneficiary_name + " (" +  beneficiary.Bank + ") " + '\n' + beneficiary.Account_number} ToWhere={() => navigation.navigate('BeneficiaryTransferDetails', {User_Id: beneficiary.User_ID, Account_holder: beneficiary.Beneficiary_name, Bank: beneficiary.Bank, Account_number: beneficiary.Account_number})}/>
     );
 
     React.useEffect(() => {

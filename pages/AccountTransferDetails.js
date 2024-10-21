@@ -50,7 +50,7 @@ const AccountTransferDetails = ({route, navigation}, props) => {
 
     const MakePayment = async () => {
       let bal = items.find(o => o.value === value)
-     
+     console.log(bal);
       let headersList = {
         "Content-Type": "application/json"
       }
@@ -74,7 +74,7 @@ const AccountTransferDetails = ({route, navigation}, props) => {
         
         if ( response.status == 200 ) {
           RecordTransaction(data.updatedBalance.Balance, data.updatedRecBalance.Balance ,bal.member);
-          createNotification();
+          createNotification(Account_holder_Id, Account_holder_Id, amount, bal.member, Account_holder);
           navigation.navigate('PaymentSuccessful');
         }  
         
@@ -105,19 +105,34 @@ const AccountTransferDetails = ({route, navigation}, props) => {
           headers: headersList
         });
         
-        console.log("Transaction recorded successfully");
       } catch (e) {
         console.log(e);
       }
     }
 
-    const createNotification = async () => {
-      let response = await fetch("http://10.10.17.11:5000/api/createNotification", { 
-        method: "POST",
-      });
-      
-      let data = await response.text();
-      console.log(data);
+    const createNotification = async (id, recId, amount, member, recMember) => {
+      let headersList = {
+        "Content-Type": "application/json"
+       }
+       
+       let bodyContent = JSON.stringify({
+         "id": id, 
+         "recId": recId, 
+         "amount": amount, 
+         "member": member, 
+         "recMember": recMember
+       });
+
+       try {
+        let response = await fetch("http://10.10.17.11:5000/api/createNotification", { 
+          method: "POST",
+          body: bodyContent,
+          headers: headersList
+        });
+
+       } catch (e) {
+        console.log(e)
+       }
     }
 
     return (

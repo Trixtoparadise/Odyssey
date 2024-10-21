@@ -261,7 +261,7 @@ app.post("/api/getUserAccountNumbers",  async (req, res) => {
         return res.status(401).send('Invalid credentials');
       }
 
-      let accNumbers = accounts.map((account) => {return {member: account.First_name + " " + account.Last_name ,label: "Mr " + account.First_name + " " + account.Last_name + " (" + account.Account_Type + ") " + account.Account_number , value: account.Account_number, balance: account.Balance}});
+      let accNumbers = accounts.map((account) => {return {accountHolderId: account.Account_holder_Id, member: account.First_name + " " + account.Last_name ,label: "Mr " + account.First_name + " " + account.Last_name + " (" + account.Account_Type + ") " + account.Account_number , value: account.Account_number, balance: account.Balance}});
       res.status(200).json(accNumbers);
   } catch (error) {
     res.status(500).send("Internal server error");
@@ -454,19 +454,23 @@ app.get("/api/getTransactions",  async (req, res) => {
 
 
 app.post("/api/createNotification", async (req, res) => {
-  try {
-    const transactions = await prisma.transaction.findMany();
-    const notifications = await prisma.notification.findMany();
+  const { id, recId, amount, member, recMember } = req.body;
+  
+  if (!id && recId) {
+    res.status(400).send('No IDs available');
+  }
 
-    if (transactions.length > notifications.length) {
-      for (let index = notifications.length; index < transactions.length; ++index) {
-        await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + transactions[index].Sent_Received + "R" + transactions[index].Amount + ". Ref: " + transactions[index].Member + ", " + transactions[index].Date.toDateString() + ", " + transactions[index].Date.toLocaleTimeString() , ID_number: transactions[index].Transaction_ID}});
-      }
-      res.status(200).json("Notifications created successfully");
-    } else {
-      res.status(200).send("All notifications are available in the database!");
+  try {
+    if (!recId) {
+      const notification = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "-" + "R" + amount + ". Ref: " + member + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: id}});
+      res.status(200).json(notification);
+    }  
+
+    if (id && recId) {
+      const notification = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "-" + "R" + amount + ". Ref: " + member + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: id}});
+      const notification2 = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "+" + "R" + amount + ". Ref: " + recMember + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: recId}});
+      res.status(200).json({ notification, notification2 });
     }
-    
   } catch (e) {
     res.status(500).send('Internal server error');
   }

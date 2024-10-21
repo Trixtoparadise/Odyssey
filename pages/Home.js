@@ -49,7 +49,7 @@ const Home = ({ navigation }) => {
     }
 
     handleUserData();
-  }, []);
+  });
   
   if ( user.id != 0) {
     const handleAccountData = async () => {

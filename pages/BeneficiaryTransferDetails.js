@@ -72,7 +72,7 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
         
         if ( response.status == 200 ) {
           RecordTransaction(data.Balance, bal.member);
-          createNotification();
+          createNotification(User_Id, amount, bal.member, Account_holder);
           navigation.navigate('PaymentSuccessful');
         }  
         
@@ -99,22 +99,34 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
           body: bodyContent,
           headers: headersList
         });
-        
-        let data = await response.json();
-        
-        console.log("Transaction recorded successfully");
+
       } catch (e) {
         console.log(e);
       }
     }
   
-    const createNotification = async () => {
-      let response = await fetch("http://10.10.17.11:5000/api/createNotification", { 
-        method: "POST",
-      });
-      
-      let data = await response.text();
-      console.log(data);
+    const createNotification = async (id, amount, member, recMember) => {
+      let headersList = {
+        "Content-Type": "application/json"
+       }
+       
+       let bodyContent = JSON.stringify({
+         "id": id, 
+         "amount": amount, 
+         "member": member, 
+         "recMember": recMember
+       });
+
+       try {
+        let response = await fetch("http://10.10.17.11:5000/api/createNotification", { 
+          method: "POST",
+          body: bodyContent,
+          headers: headersList
+        });
+
+       } catch (e) {
+        console.log(e)
+       }
     }
 
     return (
@@ -135,9 +147,9 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
                 marginTop: 80
             }}
             >
-                Mr J. Doe{"\n"}
-                (Selis Bank){"\n"}
-                8965356335677
+                {Account_holder} {"\n"}
+                ({Bank}){"\n"}
+                {Account_number}
             </Text>
             
             <Text style={{ fontSize: 16,}}>Account</Text>

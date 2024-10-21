@@ -1,10 +1,40 @@
 import { Text, Button } from '@rneui/themed';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Alert } from 'react-native';
 
 const NotificationInfo = (props) => {
+    const createTwoButtonAlert = () =>
+        Alert.alert('Delete Notification', 'Are you sure you want to delete your notification?', [
+          {
+            text: 'Cancel',
+            onPress: () => {return;},
+            style: 'cancel',
+          },
+          {text: 'OK', onPress: DeleteNotification},
+        ]);
+    
+    const DeleteNotification = async () => {
+        let headersList = {
+            "Content-Type": "application/json"
+           }
+           
+           let bodyContent = JSON.stringify({
+             "message" : props.Notification
+           });
+           
+           try {
+               await fetch("http://10.10.17.11:5000/api/DeleteNotification", { 
+                 method: "DELETE",
+                 body: bodyContent,
+                 headers: headersList
+               });
+           
+           } catch (e) {
+            console.log(e);
+           }
+    }
+    
     return (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignSelf: 'left '}}>
-
             <Text 
                 style={{ 
                 alignSelf: 'left', 
@@ -35,6 +65,7 @@ const NotificationInfo = (props) => {
                     }}
                     TouchableComponent={TouchableOpacity}
                     type="clear"
+                    onPress={createTwoButtonAlert}
                     containerStyle={{
                     width: 55,
                     alignSelf: 'left',

@@ -324,7 +324,6 @@ const HomeTabs = ({ navigation }) => {
                           size: 40,
                           color: 'rgba(0, 44, 106, 255)',
                       }}
-                      onPress={() => navigation.goBack()}
                       type="clear"
                       TouchableComponent={TouchableOpacity}
                       containerStyle={{
@@ -995,7 +994,6 @@ const App = () => {
                                 size: 40,
                                 color: 'rgba(0, 44, 106, 255)',
                             }}
-                            onPress={() => navigation.goBack()}
                             type="clear"
                             TouchableComponent={TouchableOpacity}
                             containerStyle={{

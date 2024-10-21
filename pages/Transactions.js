@@ -23,6 +23,7 @@ const Transactions = ({navigation}) => {
                 });
                 
                 let data = await response.json();
+                data.reverse();
                 setData(data);
             } catch (e) {
                 console.log(e);
@@ -53,8 +54,10 @@ const Transactions = ({navigation}) => {
                         <CustomSearchBar Title="Search transaction"/>
                         <FlatList 
                             data={data}
-                            renderItem={({item}) => 
+                            renderItem={({item}) =>
+                                <TouchableOpacity onPress={() => navigation.navigate('TransactionDetails', {Ref: item.Ref, Date: item.Date, Description: item.Description, Time: item.Time, Balance: item.Balance})}> 
                                     <Item title={item.title}/>
+                                </TouchableOpacity>
                             }
                             keyExtractor={item => item.id}
                         />

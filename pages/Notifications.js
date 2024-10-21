@@ -22,6 +22,7 @@ const Notifications = () => {
                 });
                 
                 let data = await response.json();
+                data.reverse();
                 setData(data);
             } catch (e) {
                 console.log(e);

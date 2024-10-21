@@ -10,6 +10,7 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([]);
   const [amount, setAmount] = useState(0);
+  const [ref, setRef] = useState("");
 
     const { User_Id, Account_holder, Bank, Account_number} = route.params;
     
@@ -47,6 +48,16 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
 
       handleAccounts();
     }, []);
+
+    const createTwoButtonAlert = () =>
+      Alert.alert('Process Payment', 'Are you sure you want to proceed with your payment?', [
+        {
+          text: 'Cancel',
+          onPress: () => {return;},
+          style: 'cancel',
+        },
+        {text: 'OK', onPress: MakePayment},
+      ]);
 
     const MakePayment = async () => {
       let bal = items.find(o => o.value === value)
@@ -90,7 +101,8 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
         "balance": balance,
         "amount": amount, 
         "member": member,
-        "accountNumber": value
+        "accountNumber": value,
+        "reference": ref
       });
        
       try {
@@ -114,7 +126,8 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
          "id": id, 
          "amount": amount, 
          "member": member, 
-         "recMember": recMember
+         "recMember": recMember,
+         "reference": ref
        });
 
        try {
@@ -168,7 +181,9 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
             />
             <CustomInput Title='Amount' placeholder='Enter your amount' value={amount} onChange={(text) => {setAmount(text)}}/>
             
-            <CustomButton buttonTitle='Confirm Payment' ToWhere={MakePayment}/>
+            <CustomInput Title='Reference' placeholder='Enter your reference' value={ref} onChange={(text) => {setRef(text)}}/>
+
+            <CustomButton buttonTitle='Confirm Payment' ToWhere={createTwoButtonAlert}/>
           </View> 
         </View>
       </>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Divider } from '@rneui/themed';
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '@/components/CustomInput';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -10,6 +10,7 @@ const AccountTransferDetails = ({route, navigation}, props) => {
     const [value, setValue] = useState(null);
     const [items, setItems] = useState([]);
     const [amount, setAmount] = useState(0);
+    const [ref, setRef] = useState("");
     
     const { Account_holder_Id, Account_holder, Account_number, Balance } = route.params;
 
@@ -48,9 +49,19 @@ const AccountTransferDetails = ({route, navigation}, props) => {
       handleAccounts();
     }, []);
 
+    const createTwoButtonAlert = () =>
+      Alert.alert('Process Payment', 'Are you sure you want to proceed with your payment?', [
+        {
+          text: 'Cancel',
+          onPress: () => {return;},
+          style: 'cancel',
+        },
+        {text: 'OK', onPress: MakePayment},
+      ]);
+
     const MakePayment = async () => {
       let bal = items.find(o => o.value === value)
-     console.log(bal);
+
       let headersList = {
         "Content-Type": "application/json"
       }
@@ -96,6 +107,7 @@ const AccountTransferDetails = ({route, navigation}, props) => {
         "recMember": Account_holder,
         "accountNumber": value,
         "recAccountNumber": Account_number,
+        "reference": ref
       });
        
       try {
@@ -120,7 +132,8 @@ const AccountTransferDetails = ({route, navigation}, props) => {
          "recId": recId, 
          "amount": amount, 
          "member": member, 
-         "recMember": recMember
+         "recMember": recMember,
+         "reference": ref
        });
 
        try {
@@ -173,8 +186,10 @@ const AccountTransferDetails = ({route, navigation}, props) => {
               placeholder='Select an account to pay with'
             />
             <CustomInput Title='Amount' placeholder='Enter your amount' value={amount} onChange={(text) => {setAmount(text)}}/>
+
+            <CustomInput Title='Reference' placeholder='Enter your reference' value={ref} onChange={(text) => {setRef(text)}}/>
             
-            <CustomButton buttonTitle='Confirm Payment' ToWhere={MakePayment}/>
+            <CustomButton buttonTitle='Confirm Payment' ToWhere={createTwoButtonAlert}/>
           </View> 
         </View>
       </>  

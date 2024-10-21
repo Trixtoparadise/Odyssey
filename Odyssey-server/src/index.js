@@ -393,7 +393,7 @@ app.put("/api/makebeneficiarypayment", async (req, res) => {
 });
 
 app.post("/api/recordAccountTransaction", async (req, res) => {
-  const { balance, recBalance, amount, member, recMember, accountNumber, recAccountNumber } = req.body;
+  const { balance, recBalance, amount, member, recMember, accountNumber, recAccountNumber, reference } = req.body;
 
   if ( !balance || !amount || !member || !accountNumber || !recBalance || !recMember || !recAccountNumber ) {
     return res.status(400).send("Error recording transaction");
@@ -401,11 +401,11 @@ app.post("/api/recordAccountTransaction", async (req, res) => {
   
   try {
     const transaction = await prisma.transaction.create({
-      data: { Date: new Date(), Balance: parseFloat(balance) , Amount: amount, Member: member, Account_number: accountNumber, Sent_Received: "-" },
+      data: { Date: new Date(), Balance: parseFloat(balance) , Amount: amount, Member: member, Account_number: accountNumber, Sent_Received: "-", Reference: reference },
     });
 
     const recTransaction = await prisma.transaction.create({
-      data: { Date: new Date(), Balance: parseFloat(recBalance) , Amount: amount, Member: recMember, Account_number: recAccountNumber, Sent_Received: "+" },
+      data: { Date: new Date(), Balance: parseFloat(recBalance) , Amount: amount, Member: recMember, Account_number: recAccountNumber, Sent_Received: "+", Reference: reference},
     })
 
     res.status(200).json({transaction, recTransaction});
@@ -416,7 +416,7 @@ app.post("/api/recordAccountTransaction", async (req, res) => {
 });
 
 app.post("/api/recordBeneficiaryTransaction", async (req, res) => {
-  const { balance, amount, member, accountNumber } = req.body;
+  const { balance, amount, member, accountNumber, reference } = req.body;
 
   if ( !balance || !amount || !member || !accountNumber ) {
     return res.status(400).send("Error recording transaction");
@@ -424,7 +424,7 @@ app.post("/api/recordBeneficiaryTransaction", async (req, res) => {
   
   try {
     const transaction = await prisma.transaction.create({
-      data: { Date: new Date(), Balance: parseFloat(balance) - parseFloat(amount), Amount: amount, Member: member, Account_number: accountNumber, Sent_Received: "-" },
+      data: { Date: new Date(), Balance: parseFloat(balance) - parseFloat(amount), Amount: amount, Member: member, Account_number: accountNumber, Sent_Received: "-", Reference: reference },
     });
 
     res.status(200).json({transaction});
@@ -444,7 +444,7 @@ app.get("/api/getTransactions",  async (req, res) => {
       return res.status(401).send('Invalid credentials');
     }
 
-    let statements = transactions.map((transaction) => {return {Date: transaction.Date.toDateString(), Description: transaction.Sent_Received + " R" + transaction.Amount, Time: transaction.Date.toLocaleTimeString(), Balance: transaction.Balance ,id: transaction.Transaction_ID, title:"AccNo: "  + transaction.Account_number + " , " + transaction.Sent_Received + " R" + transaction.Amount +" "+ "\n" + "Ref: " + Math.floor(Math.random() * 100000000) + " " + transaction.Member + "\n" + transaction.Date}});
+    let statements = transactions.map((transaction) => {return {Ref: transaction.Reference, Date: transaction.Date.toDateString(), Description: transaction.Sent_Received + " R" + transaction.Amount, Time: transaction.Date.toLocaleTimeString(), Balance: transaction.Balance ,id: transaction.Transaction_ID, title:"AccNo: "  + transaction.Account_number + " , Amount:" + transaction.Sent_Received + " R" + transaction.Amount +" "+ "\n" + "Ref: " + transaction.Reference + ", " + transaction.Member + "\n" + transaction.Date}});
     res.status(200).json(statements);
   } catch (error) {
     res.status(500).send("Internal server error");
@@ -454,7 +454,7 @@ app.get("/api/getTransactions",  async (req, res) => {
 
 
 app.post("/api/createNotification", async (req, res) => {
-  const { id, recId, amount, member, recMember } = req.body;
+  const { id, recId, amount, member, recMember, reference } = req.body;
   
   if (!id && recId) {
     res.status(400).send('No IDs available');
@@ -462,13 +462,13 @@ app.post("/api/createNotification", async (req, res) => {
 
   try {
     if (!recId) {
-      const notification = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "-" + "R" + amount + ". Ref: " + member + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: id}});
+      const notification = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "-" + "R" + amount + ". Ref: " + reference + ", " + member + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: id}});
       res.status(200).json(notification);
     }  
 
     if (id && recId) {
-      const notification = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "-" + "R" + amount + ". Ref: " + member + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: id}});
-      const notification2 = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "+" + "R" + amount + ". Ref: " + recMember + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: recId}});
+      const notification = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "-" + "R" + amount + ". Ref: " + reference + ", " + member + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: id}});
+      const notification2 = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "+" + "R" + amount + ". Ref: " + reference + ", " + recMember + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: recId}});
       res.status(200).json({ notification, notification2 });
     }
   } catch (e) {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Divider } from '@rneui/themed';
-import { FlatList, Text, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, StatusBar, StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import CustomHeading from '../components/CustomHeading';
 import CustomSearchBar from '../components/CustomSearchBar';
 
@@ -33,12 +33,14 @@ const Transactions = ({navigation}) => {
     
     if (data.length == 0) {
         return (
-            <View style={{ backgroundColor: 'white', width: '100%', height: '100%'}}>
-              <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
-                <Text style={{ alignSelf: 'center', marginTop: 230, fontSize: 25, color: 'rgba(0, 44, 106, 255)'}}>
-                    There are no transactions {"\n"}
-                    available at the moment.
-                </Text>
+            <View style={{backgroundColor: 'white', width: '100%', height: '100%' }}>
+                <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+                <View style={styles.splashContainer}>
+                    <Text style={{marginHorizontal: 30, fontSize: 22, marginBottom: 20, marginTop: 220, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
+                        Please Wait
+                    </Text>
+                <ActivityIndicator size="large" color="rgba(0, 44, 106, 255)" />
+                </View>
             </View>
         );
     } else {
@@ -51,10 +53,8 @@ const Transactions = ({navigation}) => {
                         <CustomSearchBar Title="Search transaction"/>
                         <FlatList 
                             data={data}
-                            renderItem={({item}) =>
-                                <TouchableOpacity onPress={() => navigation.navigate('TransactionDetails', {Date: item.Date, Description: item.Description, Ref: Math.floor(Math.random() * 100000000), Time: item.Time, Balance: item.Balance})}> 
+                            renderItem={({item}) => 
                                     <Item title={item.title}/>
-                                </TouchableOpacity>
                             }
                             keyExtractor={item => item.id}
                         />

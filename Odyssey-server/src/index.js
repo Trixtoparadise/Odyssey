@@ -483,7 +483,7 @@ app.get("/api/getNotifications",  async (req, res) => {
     });
 
     if (!notifications) {
-      return res.status(401).send('No notifications');
+      return res.status(200).send('No notifications');
     }
 
     let statements = notifications.map((notification) => {return {id: notification.Notification_ID, title: notification.Message}});
@@ -494,6 +494,24 @@ app.get("/api/getNotifications",  async (req, res) => {
 });
 
 
+
+app.delete("/api/DeleteNotification", async (req, res) => {
+  const { message } = req.body;
+
+  if (!message) {
+      return res.status(400).send("No valid Message");
+  }
+
+  try {
+      await prisma.notification.delete({
+          where: { Message: message },
+      });
+
+      res.status(204).send();
+  } catch (error) {
+      res.status(500).send("Oops, something went wrong");
+  }
+});
 
 app.delete("/api/DeleteBeneficiary", async (req, res) => {
   const { accountNumber } = req.body;

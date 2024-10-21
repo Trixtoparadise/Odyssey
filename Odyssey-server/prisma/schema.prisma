@@ -54,6 +54,7 @@ model Transaction {
   Member String
   Account_number Int
   Sent_Received String
+  Reference String
   Transaction_owner Account @relation(fields: [Account_number], references: [Account_number], onDelete: Cascade)
 }
 

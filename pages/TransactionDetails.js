@@ -49,7 +49,6 @@ const createAndSavePDF = async () => {
     }
 };
 
-
 const TransactionDetails = ({route, navigation}) => {
     const {Date, Description, Ref, Time, Balance} = route.params;
     return (        
@@ -72,7 +71,7 @@ const TransactionDetails = ({route, navigation}) => {
 
                 <Text style={{marginHorizontal: 15, fontSize: 18, marginVertical: 20, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
                     Date:                   {Date}{"\n"}
-                    Description:       {Description}{"\n"}
+                    Amount:             {Description}{"\n"}
                     Ref:                      {Ref}{"\n"}
                     Time:                   {Time}{"\n"}
                     Balance:             R{Balance}{"\n"}

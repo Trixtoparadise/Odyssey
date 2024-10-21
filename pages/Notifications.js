@@ -29,27 +29,39 @@ const Notifications = () => {
         }
         handleAccounts();
     }, []);
-
-    return (
-        <>
-            <View style={{backgroundColor: 'white', width: '100%', height: '100%'}}>
-                <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
-                <View style={{ marginHorizontal: 30, marginTop: 20, height: '80%'}}>
-                    <CustomHeading Title='Notifications'/>
-                    <CustomSearchBar Title="Search transaction"/>
-                    <FlatList 
-                        data={data}
-                        renderItem={({item}) =>
-                            <TouchableOpacity > 
-                                <Item title={item.title}/>
-                            </TouchableOpacity>
-                        }
-                        keyExtractor={item => item.id}
-                    />
-                </View>
+    
+    if (data.length == 0) {
+        return (
+            <View style={{ backgroundColor: 'white', width: '100%', height: '100%'}}>
+              <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+                <Text style={{ alignSelf: 'center', marginTop: 230, fontSize: 25, color: 'rgba(0, 44, 106, 255)'}}>
+                    There are no notifications {"\n"}
+                    available at the moment.
+                </Text>
             </View>
-        </> 
-    );
+        );
+    } else {
+        return (
+            <>
+                <View style={{backgroundColor: 'white', width: '100%', height: '100%'}}>
+                    <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+                    <View style={{ marginHorizontal: 30, marginTop: 20, height: '80%'}}>
+                        <CustomHeading Title='Notifications'/>
+                        <CustomSearchBar Title="Search transaction"/>
+                        <FlatList 
+                            data={data}
+                            renderItem={({item}) =>
+                                <TouchableOpacity > 
+                                    <Item title={item.title}/>
+                                </TouchableOpacity>
+                            }
+                            keyExtractor={item => item.id}
+                        />
+                    </View>
+                </View>
+            </> 
+        );
+    }
 }
 
 const styles = StyleSheet.create({

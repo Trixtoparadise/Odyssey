@@ -31,26 +31,39 @@ const Transactions = ({navigation}) => {
         handleAccounts();
     }, []);
     
-    return (
-        <>
-            <View style={{backgroundColor: 'white', width: '100%', height: '100%'}}>
-                <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
-                <View style={{ marginHorizontal: 30, marginTop: 20, height: '80%'}}>
-                    <CustomHeading Title='Transactions'/>
-                    <CustomSearchBar Title="Search transaction"/>
-                    <FlatList 
-                        data={data}
-                        renderItem={({item}) =>
-                            <TouchableOpacity onPress={() => navigation.navigate('TransactionDetails', {Date: item.Date, Description: item.Description, Ref: Math.floor(Math.random() * 100000000), Time: item.Time, Balance: item.Balance})}> 
-                                <Item title={item.title}/>
-                            </TouchableOpacity>
-                        }
-                        keyExtractor={item => item.id}
-                    />
-                </View>
+    if (data.length == 0) {
+        return (
+            <View style={{ backgroundColor: 'white', width: '100%', height: '100%'}}>
+              <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+                <Text style={{ alignSelf: 'center', marginTop: 230, fontSize: 25, color: 'rgba(0, 44, 106, 255)'}}>
+                    There are no transactions {"\n"}
+                    available at the moment.
+                </Text>
             </View>
-        </> 
-    );
+        );
+    } else {
+        return (
+            <>
+                <View style={{backgroundColor: 'white', width: '100%', height: '100%'}}>
+                    <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+                    <View style={{ marginHorizontal: 30, marginTop: 20, height: '80%'}}>
+                        <CustomHeading Title='Transactions'/>
+                        <CustomSearchBar Title="Search transaction"/>
+                        <FlatList 
+                            data={data}
+                            renderItem={({item}) =>
+                                <TouchableOpacity onPress={() => navigation.navigate('TransactionDetails', {Date: item.Date, Description: item.Description, Ref: Math.floor(Math.random() * 100000000), Time: item.Time, Balance: item.Balance})}> 
+                                    <Item title={item.title}/>
+                                </TouchableOpacity>
+                            }
+                            keyExtractor={item => item.id}
+                        />
+                    </View>
+                </View>
+            </> 
+        );
+    }
+
 }
 
 const styles = StyleSheet.create({

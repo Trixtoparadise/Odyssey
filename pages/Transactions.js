@@ -24,7 +24,39 @@ class User {
 const Transactions = ({navigation}) => {
     const [data, setData] = React.useState([]);
     const [emp, setEmp] = React.useState("");
+    const [searchText, setSearchText] = React.useState("");
     const [user, setUser] = React.useState(new User("", 0, 0));
+
+    const Item = ({item}) => {
+        if (!searchText || searchText.trim().length < 1) {
+         return (
+            
+            <View style={styles.item}>
+                <TouchableOpacity onPress={() => navigation.navigate('TransactionDetails', {Ref: item.Ref, Date: item.Date, Description: item.Description, Time: item.Time, Balance: item.Balance})}>
+                    <Text style={styles.title}>
+                        {item.title}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+         );
+        }
+        
+         const indx = item.title.toLowerCase().indexOf(searchText.toLowerCase());
+         const length = searchText.length;
+         let leftText = item.title.substr(0, indx);
+         let keyWord = item.title.substr(indx, length);
+         let rightText = item.title.substr(indx + length);
+ 
+        if (indx < 0) return null;
+ 
+         return (
+            <View style={styles.item}>
+                <Text style={styles.title}>
+                    {leftText + keyWord + rightText}
+                </Text>
+            </View>
+         );
+     };
 
     React.useEffect(() => {
         async function handleUserData () {
@@ -109,14 +141,10 @@ const Transactions = ({navigation}) => {
                     <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
                     <View style={{ marginHorizontal: 30, marginTop: 20, height: '80%'}}>
                         <CustomHeading Title='Transactions'/>
-                        <CustomSearchBar Title="Search transaction"/>
+                        <CustomSearchBar Title="Search transaction" value={searchText} onChangeText={setSearchText}/>
                         <FlatList 
                             data={data}
-                            renderItem={({item}) =>
-                                <TouchableOpacity onPress={() => navigation.navigate('TransactionDetails', {Ref: item.Ref, Date: item.Date, Description: item.Description, Time: item.Time, Balance: item.Balance})}> 
-                                    <Item title={item.title}/>
-                                </TouchableOpacity>
-                            }
+                            renderItem={Item}
                             keyExtractor={item => item.id}
                         />
                     </View>

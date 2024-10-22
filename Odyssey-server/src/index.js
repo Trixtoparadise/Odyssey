@@ -106,7 +106,7 @@ app.post("/api/signup", async (req, res) => {
     });
 
     const token = jwt.sign({ Username: user.Username }, 'secret');
-    res.status(200).json({ token });
+    res.status(200).json(token);
     
   } catch (error) {
     res.status(500).send('Internal server error');
@@ -234,8 +234,8 @@ app.post("/api/getUserAccounts",  async (req, res) => {
         }
       });
 
-      if (!accounts) {
-        return res.status(401).send('Invalid credentials');
+      if (accounts.length == 0) {
+        res.status(200).send('No accounts');
       }
       res.status(200).json(accounts);
   } catch (error) {
@@ -331,8 +331,8 @@ app.post("/api/getUserBeneficiaries",  async (req, res) => {
       }
     });
 
-    if (!beneficiaries) {
-      return res.status(401).send('Invalid credentials');
+    if (beneficiaries.length == 0) {
+      res.status(200).send('No beneficiaries');
     }
     res.status(200).json(beneficiaries);
   } catch (error) {

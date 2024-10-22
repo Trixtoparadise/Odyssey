@@ -29,7 +29,7 @@ const Notifications = () => {
         );
        }
        
-        const indx = item.title.indexOf(searchText);
+       const indx = item.title.toLowerCase().indexOf(searchText.toLowerCase());
         const length = searchText.length;
         let leftText = item.title.substr(0, indx);
         let keyWord = item.title.substr(indx, length);

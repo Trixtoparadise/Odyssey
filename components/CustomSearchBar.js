@@ -12,6 +12,8 @@ const CustomSearchBar = (props) => {
             borderColor: 'white',
             width: 250,
             }}
+            value={props.value}
+            onChangeText={props.onChangeText}
             inputContainerStyle={{
             backgroundColor: 'white',
             borderRadius: 15,

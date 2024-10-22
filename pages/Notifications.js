@@ -1,4 +1,5 @@
 import React from 'react';
+import * as SecureStore from 'expo-secure-store';
 import { Divider } from '@rneui/themed';
 import { FlatList, Text, StatusBar, StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import CustomHeading from '../components/CustomHeading';
@@ -11,27 +12,84 @@ const Item = ({title}) => (
     </View>
 );
 
+class User {
+    constructor(username, phoneNumber, id) {
+      this.username = username;
+      this.phoneNumber = phoneNumber;
+      this.id = id;
+    }
+}
+
 const Notifications = () => {
     const [data, setData] = React.useState([]);
-
+    const [emp, setEmp] = React.useState("");
+    const [user, setUser] = React.useState(new User("", 0, 0));
+ 
     React.useEffect(() => {
-        const handleAccounts = async () => {
-            try{    
-                let response = await fetch("http://10.10.17.11:5000/api/getnotifications", { 
-                    method: "GET",
-                });
-                
-                let data = await response.json();
-                data.reverse();
-                setData(data);
+        async function handleUserData () {
+            let userToken = null;
+            let retToken;
+            
+            try {
+                retToken = await SecureStore.getItemAsync('userToken');
+                if (retToken != null){
+                    userToken = "Bearer " + retToken.replace(/"/g, ''); 
+                }
             } catch (e) {
                 console.log(e);
             }
+            let headersList = {
+                "Authorization": userToken
+            }
+            
+            try {
+                const response = await fetch("http://10.10.17.11:5000/api/user", { 
+                    method: "GET",
+                    headers: headersList
+                });
+                
+                const data = await response.json();
+                setUser(data);
+            } catch(e) {
+                console.log(e)
+            }
         }
-        handleAccounts();
-    }, );
+        
+        handleUserData();
+    }, []);
 
-    if (data.length == 0) {
+    const handleAccounts = async () => {
+        let headersList = {
+            "Content-Type": "application/json"
+           }
+           
+           let bodyContent = JSON.stringify({
+             "id": user.id
+           });
+        
+        try{    
+            let response = await fetch("http://10.10.17.11:5000/api/getnotifications", { 
+                method: "POST",
+                body: bodyContent,
+                headers: headersList
+            });
+            
+            let data = await response.text();
+            if (data == 'No notifications') {
+                setEmp(data);
+            } else if (data != 'No notifications') {
+                data = JSON.parse(data);
+                data.reverse();
+                setData(data);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    handleAccounts();
+
+    if (data.length == 0 && emp == "") {
         return (
             <View style={{backgroundColor: 'white', width: '100%', height: '100%' }}>
                 <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
@@ -43,7 +101,7 @@ const Notifications = () => {
                 </View>
             </View>
         );
-    } else {
+    } else if (data.length !=0) {
         return (
             <>
                 <View style={{backgroundColor: 'white', width: '100%', height: '100%'}}>
@@ -61,6 +119,17 @@ const Notifications = () => {
                     </View>
                 </View>
             </> 
+        );
+    } else if (data.length == 0 && emp == 'No notifications') {
+        return (
+            <View style={{backgroundColor: 'white', width: '100%', height: '100%' }}>
+                <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+                <View style={styles.splashContainer}>
+                    <Text style={{marginHorizontal: 30, fontSize: 22, marginBottom: 20, marginTop: 230, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
+                        No notifications
+                    </Text>
+                </View>
+            </View>
         );
     }
 }

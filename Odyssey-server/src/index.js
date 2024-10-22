@@ -434,18 +434,26 @@ app.post("/api/recordBeneficiaryTransaction", async (req, res) => {
   }
 });
 
-app.get("/api/getTransactions",  async (req, res) => {
-  
-  try {
-    const transactions = await prisma.transaction.findMany({  
-    });
+app.post("/api/getTransactions",  async (req, res) => {
+  const { id } = req.body;
 
-    if (!transactions) {
-      return res.status(401).send('Invalid credentials');
+  try {
+    const accounts = await prisma.account.findMany({
+      where: {Account_holder_Id: id}
+    })
+    
+    const transactions = [];
+
+    for (let x in accounts) {
+      transactions[x] = await prisma.transaction.findMany({ where: {Account_number: accounts[x].Account_number}});
     }
 
-    let statements = transactions.map((transaction) => {return {Ref: transaction.Reference, Date: transaction.Date.toDateString(), Description: transaction.Sent_Received + " R" + transaction.Amount, Time: transaction.Date.toLocaleTimeString(), Balance: transaction.Balance ,id: transaction.Transaction_ID, title:"AccNo: "  + transaction.Account_number + " , Amount:" + transaction.Sent_Received + " R" + transaction.Amount +" "+ "\n" + "Ref: " + transaction.Reference + ", " + transaction.Member + "\n" + transaction.Date}});
-    res.status(200).json(statements);
+    if (transactions.length == 0) {
+      res.status(200).send('No transactions'); 
+    } else if (transactions.length > 0) {
+      let statements = transactions.flat().map((transaction) => {return {Ref: transaction.Reference, Date: transaction.Date.toDateString(), Description: transaction.Sent_Received + " R" + transaction.Amount, Time: transaction.Date.toLocaleTimeString(), Balance: transaction.Balance ,id: transaction.Transaction_ID, title:"AccNo: "  + transaction.Account_number + " , " + transaction.Sent_Received + " R" + transaction.Amount +" "+ "\n" + "Ref: " + transaction.Reference + " " + transaction.Member + "\n" + transaction.Date}});
+      res.status(200).json(statements);
+    }
   } catch (error) {
     res.status(500).send("Internal server error");
   }
@@ -476,18 +484,21 @@ app.post("/api/createNotification", async (req, res) => {
   }
 });
 
-app.get("/api/getNotifications",  async (req, res) => {
-  
+app.post("/api/getNotifications",  async (req, res) => {
+  const { id } = req.body;
+
   try {
     const notifications = await prisma.notification.findMany({  
+        where: { ID_number : id}
     });
 
-    if (!notifications) {
-      return res.status(200).send('No notifications');
+    if (notifications.length == 0) {
+      res.status(200).send('No notifications');
+    } else if (notifications.length > 0) {
+      let statements = notifications.map((notification) => {return {id: notification.Notification_ID, title: notification.Message}});
+      res.status(200).json(statements);
     }
 
-    let statements = notifications.map((notification) => {return {id: notification.Notification_ID, title: notification.Message}});
-    res.status(200).json(statements);
   } catch (error) {
     res.status(500).send("Internal server error");
   }

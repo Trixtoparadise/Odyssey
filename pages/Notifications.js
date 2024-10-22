@@ -6,12 +6,6 @@ import CustomHeading from '../components/CustomHeading';
 import CustomSearchBar from '../components/CustomSearchBar';
 import NotificationInfo from '../components/NotificationInfo';
 
-const Item = ({title}) => (
-    <View>
-        <NotificationInfo Notification={title}/>
-    </View>
-);
-
 class User {
     constructor(username, phoneNumber, id) {
       this.username = username;
@@ -23,7 +17,32 @@ class User {
 const Notifications = () => {
     const [data, setData] = React.useState([]);
     const [emp, setEmp] = React.useState("");
+    const [searchText, setSearchText] = React.useState("");
     const [user, setUser] = React.useState(new User("", 0, 0));
+
+    const Item = ({item}) => {
+       if (!searchText || searchText.trim().length < 1) {
+        return (
+            <View>
+                <NotificationInfo Notification={item.title}/>
+            </View>
+        );
+       }
+       
+        const indx = item.title.indexOf(searchText);
+        const length = searchText.length;
+        let leftText = item.title.substr(0, indx);
+        let keyWord = item.title.substr(indx, length);
+        let rightText = item.title.substr(indx + length);
+
+       if (indx < 0) return null;
+
+        return (
+            <View>
+                <NotificationInfo Notification={leftText + keyWord + rightText}/>
+            </View>
+        );
+    };
  
     React.useEffect(() => {
         async function handleUserData () {
@@ -108,13 +127,11 @@ const Notifications = () => {
                     <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
                     <View style={{ marginHorizontal: 30, marginTop: 20, height: '80%'}}>
                         <CustomHeading Title='Notifications'/>
-                        <CustomSearchBar Title="Search transaction"/>
+                        <CustomSearchBar Title="Search transaction" value={searchText} onChangeText={setSearchText} />
                         <FlatList 
                             data={data}
-                            renderItem={({item}) =>
-                                <Item title={item.title}/>
-                            }
-                            keyExtractor={item => item.id}
+                            renderItem={Item}
+                            keyExtractor={Item.id}
                         />
                     </View>
                 </View>

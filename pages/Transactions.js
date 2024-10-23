@@ -5,14 +5,6 @@ import { FlatList, Text, StatusBar, StyleSheet, TouchableOpacity, View, Activity
 import CustomHeading from '../components/CustomHeading';
 import CustomSearchBar from '../components/CustomSearchBar';
 
-const Item = ({title}) => (
-    <View style={styles.item}>
-        <Text style={styles.title}>
-            {title}
-        </Text>
-    </View>
-);
-
 class User {
     constructor(username, phoneNumber, id) {
       this.username = username;
@@ -32,7 +24,7 @@ const Transactions = ({navigation}) => {
          return (
             
             <View style={styles.item}>
-                <TouchableOpacity onPress={() => navigation.navigate('TransactionDetails', {Ref: item.Ref, Date: item.Date, Description: item.Description, Time: item.Time, Balance: item.Balance})}>
+                <TouchableOpacity onPress={() => navigation.navigate('TransactionDetails', {Member: item.member, Ref: item.Ref, Date: item.Date, Description: item.Description, Time: item.Time, Balance: item.Balance})}>
                     <Text style={styles.title}>
                         {item.title}
                     </Text>

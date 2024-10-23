@@ -50,7 +50,7 @@ const createAndSavePDF = async () => {
 };
 
 const TransactionDetails = ({route, navigation}) => {
-    const {Date, Description, Ref, Time, Balance} = route.params;
+    const {Member, Date, Description, Ref, Time, Balance} = route.params;
     return (        
         
             <View style={{ backgroundColor: 'white', width: '100%', height: '100%'}}>
@@ -70,11 +70,12 @@ const TransactionDetails = ({route, navigation}) => {
                 </Text>
 
                 <Text style={{marginHorizontal: 15, fontSize: 18, marginVertical: 20, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
-                    Date:                   {Date}{"\n"}
-                    Amount:             {Description}{"\n"}
-                    Ref:                      {Ref}{"\n"}
-                    Time:                   {Time}{"\n"}
-                    Balance:             R{Balance}{"\n"}
+                    Account Holder:   {Member}{"\n"}
+                    Date:                       {Date}{"\n"}
+                    Amount:                 {Description}{"\n"}
+                    Ref:                          {Ref}{"\n"}
+                    Time:                       {Time}{"\n"}
+                    Balance:                 R{Balance}{"\n"}
                 </Text>
 
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignSelf: 'center' }}>

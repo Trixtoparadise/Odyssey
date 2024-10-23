@@ -1,7 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
 import { Divider } from '@rneui/themed';
-import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, FlatList } from 'react-native';
 import CustomHeading from '../components/CustomHeading';
 import CustomSearchBar from '../components/CustomSearchBar';
 import AccountInfo from '../components/AccountInfo';
@@ -17,11 +17,30 @@ class User {
 
 const Beneficiaries = ({navigation}) => {
     const [user, setUser] = React.useState(new User("", 0, 0));
+    const [searchText, setSearchText] = React.useState("");
     const [beneficiaries, setBeneficiaries] = React.useState([]);
     
-    const listBeneficiaries = beneficiaries.map((beneficiary) =>
-        <AccountInfo key={beneficiary.Account_number} Account={beneficiary.Beneficiary_name + " (" +  beneficiary.Bank + ") " + '\n' + beneficiary.Account_number} ToWhere={() => navigation.navigate('ViewBeneficiary', {User_Id: beneficiary.User_ID, Account_holder: beneficiary.Beneficiary_name, Bank: beneficiary.Bank, Account_number: beneficiary.Account_number})}/>
-    );
+    const Item = ({item}) => {
+      let accInfo = item.Beneficiary_name + " (" +  item.Bank + ") " + '\n' + item.Account_number;
+
+      if (!searchText || searchText.trim().length < 1) {
+       return (
+        <AccountInfo key={item.Account_number} Account={item.Beneficiary_name + " (" +  item.Bank + ") " + '\n' + item.Account_number} ToWhere={() => navigation.navigate('ViewBeneficiary', {User_Id: item.User_ID, Account_holder: item.Beneficiary_name, Bank: item.Bank, Account_number: item.Account_number})}/>
+       );
+      }
+      
+       const indx = accInfo.toLowerCase().indexOf(searchText.toLowerCase());
+       const length = searchText.length;
+       let leftText = accInfo.substr(0, indx);
+       let keyWord = accInfo.substr(indx, length);
+       let rightText = accInfo.substr(indx + length);
+
+      if (indx < 0) return null;
+
+       return (
+        <AccountInfo key={item.Account_number} Account={leftText + keyWord + rightText} ToWhere={() => navigation.navigate('ViewBeneficiary', {User_Id: item.User_ID, Account_holder: item.Beneficiary_name, Bank: item.Bank, Account_number: item.Account_number})}/>
+       );
+   }
 
     React.useEffect(() => {
       async function handleUserData () {
@@ -103,8 +122,12 @@ const Beneficiaries = ({navigation}) => {
                     <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
                     <View style={{ marginHorizontal: 30, marginTop: 20}}>
                         <CustomHeading Title='Beneficiaries'/>
-                        <CustomSearchBar Title="Search beneficiaries"/>
-                        {listBeneficiaries}
+                        <CustomSearchBar Title="Search beneficiaries" value={searchText} onChangeText={setSearchText}/>
+                        <FlatList 
+                            data={beneficiaries}
+                            renderItem={Item}
+                            keyExtractor={item => item.Account_number}
+                        />
                         <CustomButton  buttonTitle='Add beneficiary' ToWhere={() => navigation.navigate('CreateBeneficiary')}/>
                     </View>
                 </View>

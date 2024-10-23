@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { Divider } from '@rneui/themed';
-import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, FlatList } from 'react-native';
 import CustomHeading from '../components/CustomHeading';
 import CustomSearchBar from '../components/CustomSearchBar';
 import AccountInfo from '../components/AccountInfo';
@@ -16,6 +16,7 @@ class User {
 
 const AccountsToPay = ({navigation}) => {
     const [user, setUser] = React.useState(new User("", 0, 0));
+    const [searchText, setSearchText] = React.useState("");
     const [accounts, setAccounts] = React.useState([]);
 
     React.useEffect(() => {
@@ -50,6 +51,28 @@ const AccountsToPay = ({navigation}) => {
   
       handleUserData();
     }, []);
+
+    const Item = ({item}) => {
+      let accInfo = "Mr " + item.First_name + " " + item.Last_name + " (" + item.Account_Type + " Account) " + item.Account_number;
+
+      if (!searchText || searchText.trim().length < 1) {
+       return (
+        <AccountInfo key={item.Account_number} Account={accInfo} ToWhere={() => navigation.navigate('ViewAccount', {Account_holder_Id: item.Account_holder_Id, Account_holder: "Mr " + item.First_name + " " + item.Last_name, Account_number: item.Account_number, Account_Type: item.Account_Type, Balance: item.Balance})}/>
+       );
+      }
+      
+       const indx = accInfo.toLowerCase().indexOf(searchText.toLowerCase());
+       const length = searchText.length;
+       let leftText = accInfo.substr(0, indx);
+       let keyWord = accInfo.substr(indx, length);
+       let rightText = accInfo.substr(indx + length);
+
+      if (indx < 0) return null;
+
+       return (
+        <AccountInfo key={item.Account_number} Account={leftText + keyWord + rightText} ToWhere={() => navigation.navigate('ViewAccount', {Account_holder_Id: item.Account_holder_Id, Account_holder: "Mr " + item.First_name + " " + item.Last_name, Account_number: item.Account_number, Account_Type: item.Account_Type, Balance: item.Balance})}/>
+       );
+   };
   
     if ( user.id != 0) {
       const handleAccountData = async () => {
@@ -79,10 +102,6 @@ const AccountsToPay = ({navigation}) => {
       
     handleAccountData();
     }
-
-  const listAccounts = accounts.map((account) =>
-    <AccountInfo key={account.Account_number} Account={"Mr " + account.First_name + " " + account.Last_name + " (" + account.Account_Type + " Account) " + account.Account_number} ToWhere={() => navigation.navigate('AccountTransferDetails', {Account_holder_Id: account.Account_holder_Id, Account_holder: "Mr " + account.First_name + " " + account.Last_name, Account_number: account.Account_number, Account_Type: account.Account_Type, Balance: account.Balance})} />
-  );
   
   if (user.id == 0 || accounts.length == 0) {
     return (
@@ -103,8 +122,12 @@ const AccountsToPay = ({navigation}) => {
                 <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
                 <View style={{ marginHorizontal: 30, marginTop: 20}}>
                     <CustomHeading Title='Select an account to pay'/>
-                    <CustomSearchBar Title="Search account"/>
-                    {listAccounts}
+                    <CustomSearchBar Title="Search account"value={searchText} onChangeText={setSearchText} />
+                    <FlatList 
+                        data={accounts}
+                        renderItem={Item}
+                        keyExtractor={item => item.Account_number}
+                    />
                 </View>
             </View>
         </> 

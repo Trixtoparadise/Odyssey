@@ -127,7 +127,7 @@ const Notifications = () => {
                     <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
                     <View style={{ marginHorizontal: 30, marginTop: 20, height: '80%'}}>
                         <CustomHeading Title='Notifications'/>
-                        <CustomSearchBar Title="Search transaction" value={searchText} onChangeText={setSearchText} />
+                        <CustomSearchBar Title="Search notification" value={searchText} onChangeText={setSearchText} />
                         <FlatList 
                             data={data}
                             renderItem={Item}

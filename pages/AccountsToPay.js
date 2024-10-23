@@ -57,7 +57,7 @@ const AccountsToPay = ({navigation}) => {
 
       if (!searchText || searchText.trim().length < 1) {
        return (
-        <AccountInfo key={item.Account_number} Account={accInfo} ToWhere={() => navigation.navigate('ViewAccount', {Account_holder_Id: item.Account_holder_Id, Account_holder: "Mr " + item.First_name + " " + item.Last_name, Account_number: item.Account_number, Account_Type: item.Account_Type, Balance: item.Balance})}/>
+        <AccountInfo key={item.Account_number} Account={accInfo} ToWhere={() => navigation.navigate('AccountTransferDetails', {Account_holder_Id: item.Account_holder_Id, Account_holder: "Mr " + item.First_name + " " + item.Last_name, Account_number: item.Account_number, Account_Type: item.Account_Type, Balance: item.Balance})} />
        );
       }
       
@@ -70,7 +70,7 @@ const AccountsToPay = ({navigation}) => {
       if (indx < 0) return null;
 
        return (
-        <AccountInfo key={item.Account_number} Account={leftText + keyWord + rightText} ToWhere={() => navigation.navigate('ViewAccount', {Account_holder_Id: item.Account_holder_Id, Account_holder: "Mr " + item.First_name + " " + item.Last_name, Account_number: item.Account_number, Account_Type: item.Account_Type, Balance: item.Balance})}/>
+        <AccountInfo key={item.Account_number} Account={leftText + keyWord + rightText} ToWhere={() => navigation.navigate('AccountTransferDetails', {Account_holder_Id: item.Account_holder_Id, Account_holder: "Mr " + item.First_name + " " + item.Last_name, Account_number: item.Account_number, Account_Type: item.Account_Type, Balance: item.Balance})} />
        );
    };
   
@@ -102,6 +102,7 @@ const AccountsToPay = ({navigation}) => {
       
     handleAccountData();
     }
+
   
   if (user.id == 0 || accounts.length == 0) {
     return (

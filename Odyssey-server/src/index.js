@@ -451,7 +451,7 @@ app.post("/api/getTransactions",  async (req, res) => {
     if (transactions.length == 0) {
       res.status(200).send('No transactions'); 
     } else if (transactions.length > 0) {
-      let statements = transactions.flat().map((transaction) => {return {Ref: transaction.Reference, Date: transaction.Date.toDateString(), Description: transaction.Sent_Received + " R" + transaction.Amount, Time: transaction.Date.toLocaleTimeString(), Balance: transaction.Balance ,id: transaction.Transaction_ID, title:"AccNo: "  + transaction.Account_number + " , " + transaction.Sent_Received + " R" + transaction.Amount +" "+ "\n" + "Ref: " + transaction.Reference + " " + transaction.Member + "\n" + transaction.Date}});
+      let statements = transactions.flat().map((transaction) => {return {Ref: transaction.Reference, Date: transaction.Date.toDateString(), Description: transaction.Sent_Received + " R" + transaction.Amount, Time: transaction.Date.toLocaleTimeString(), Balance: transaction.Balance ,id: transaction.Transaction_ID, member: transaction.Member, title:"AccNo: "  + transaction.Account_number + " , " + transaction.Sent_Received + " R" + transaction.Amount +" "+ "\n" + "Ref: " + transaction.Reference + ", " + transaction.Member + "\n" + transaction.Date}});
       res.status(200).json(statements);
     }
   } catch (error) {

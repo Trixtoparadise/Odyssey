@@ -6,7 +6,6 @@ import CustomHeading from '@/components/CustomHeading';
 import DropDownPicker from 'react-native-dropdown-picker';
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
-import { useState } from 'react';
 
 class User {
   constructor(username, phoneNumber, id) {

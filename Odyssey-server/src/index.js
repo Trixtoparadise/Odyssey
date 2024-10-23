@@ -261,7 +261,7 @@ app.post("/api/getUserAccountNumbers",  async (req, res) => {
         return res.status(401).send('Invalid credentials');
       }
 
-      let accNumbers = accounts.map((account) => {return {accountHolderId: account.Account_holder_Id, member: account.First_name + " " + account.Last_name ,label: "Mr " + account.First_name + " " + account.Last_name + " (" + account.Account_Type + ") " + account.Account_number , value: account.Account_number, balance: account.Balance}});
+      let accNumbers = accounts.map((account) => {return {accountHolderId: account.Account_holder_Id, member: account.First_name + " " + account.Last_name ,label: " " + account.First_name + " " + account.Last_name + " (" + account.Account_Type + ") " + account.Account_number , value: account.Account_number, balance: account.Balance}});
       res.status(200).json(accNumbers);
   } catch (error) {
     res.status(500).send("Internal server error");
@@ -370,7 +370,7 @@ app.put("/api/makeaccountpayment", async (req, res) => {
 });
 
 app.put("/api/makebeneficiarypayment", async (req, res) => {
-  const { accountNumber, amount, balance } = req.body;
+  const { bank, accountNumber, amount, balance } = req.body;
 
   if (!accountNumber || !amount) {
       return res.status(400).send("All fields are required");

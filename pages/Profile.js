@@ -14,7 +14,7 @@ const Profile = ({navigation}) => {
                 <ProfileHeading />
 
                 <Text style={{marginHorizontal: 30, fontSize: 22, marginVertical: 20, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
-                    Name : Mr John Doe {"\n"}
+                    Name :  John Doe {"\n"}
                     Phone number: +27 78 348 2171 {"\n"}
                     ID Number : 001234543567257
                 </Text>

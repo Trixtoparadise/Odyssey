@@ -61,7 +61,7 @@ const ViewBeneficiary = ({route, navigation}) => {
 
 
             <Text style={{marginHorizontal: 30, fontSize: 22, marginVertical: 20, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
-                Account holder : Mr {Account_holder} {"\n"}
+                Account holder :  {Account_holder} {"\n"}
                 Bank : {Bank} {"\n"}
                 Account Number : {Account_number}
             </Text>

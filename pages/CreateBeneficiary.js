@@ -1,10 +1,11 @@
 import * as React from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, Text } from 'react-native';
 import { Divider } from '@rneui/themed';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '@/components/CustomInput';
 import CustomHeading from '@/components/CustomHeading';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 class User {
   constructor(username, phoneNumber, id) {
@@ -15,10 +16,16 @@ class User {
 }
 
 export default function CreateBeneficiary({navigation}) {
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState(null);
+  const [items, setItems] = React.useState([
+    {label: 'Odyssey Bank', value: 'Odyssey bank'},
+    {label: 'Selis Bank', value: 'Selis bank'},
+    {label: 'Lorem Bank', value: 'Lorem bank'},
+  ]);
   const [user, setUser] = React.useState(new User("", 0, 0));
   const [beneficiaryName, setBeneficiaryName] = React.useState("");
   const [accountNumber, setAccountNumber] = React.useState(0);
-  const [bank, setBank] = React.useState(""); 
  
   React.useEffect(() => {
     async function handleUserData () {
@@ -73,7 +80,7 @@ export default function CreateBeneficiary({navigation}) {
        "id": parseInt(user.id),
        "beneficiaryName": beneficiaryName,
        "accountNumber": parseInt(accountNumber),
-       "bank": bank,
+       "bank": value,
      });
      
      let response = await fetch("http://10.10.17.11:5000/api/addbeneficiary", { 
@@ -98,8 +105,21 @@ export default function CreateBeneficiary({navigation}) {
 
         <CustomInput Title='Beneficiary Name' placeholder="Enter the name of your beneficiary" value={beneficiaryName} onChange={text => setBeneficiaryName(text)} />
         <CustomInput Title='Beneficiary account number' placeholder='Enter account number' value={accountNumber} onChange={text => setAccountNumber(text)} />
-        <CustomInput Title='Beneficiary bank ' placeholder='Enter your bank name' value={bank} onChange={text => setBank(text)} />
-               
+        <Text style={{ fontSize: 16,}}>Beneficiary bank</Text>
+        <DropDownPicker
+          open={open}
+          value={value}
+          items={items}
+          setOpen={setOpen}
+          setValue={setValue}
+          setItems={setItems}
+          style={{ marginTop: 10, marginBottom: 20}}
+          placeholderStyle={{
+            color: 'grey',
+          }}
+          placeholder='Select your bank'
+        />
+
         <CustomButton  buttonTitle='Continue' ToWhere={createTwoButtonAlert}/>
         
       </View>

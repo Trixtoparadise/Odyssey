@@ -101,7 +101,7 @@ const Home = ({ navigation }) => {
       
       if (mod.length != 0) {
         listAccounts = mod.map((account) =>
-          <AccountInfo key={account.Account_number} Account={"Mr " + account.First_name + " " + account.Last_name + " (" + account.Account_Type + " Account) " + account.Account_number} ToWhere={() => navigation.navigate('ViewAccount', {Account_holder_Id: account.Account_holder_Id, Account_holder: "Mr " + account.First_name + " " + account.Last_name, Account_number: account.Account_number, Account_Type: account.Account_Type, Balance: account.Balance})}/>
+          <AccountInfo key={account.Account_number} Account={" " + account.First_name + " " + account.Last_name + " (" + account.Account_Type + " Account) " + account.Account_number} ToWhere={() => navigation.navigate('ViewAccount', {Account_holder_Id: account.Account_holder_Id, Account_holder: " " + account.First_name + " " + account.Last_name, Account_number: account.Account_number, Account_Type: account.Account_Type, Balance: account.Balance})}/>
         );
         exAccbutton = <ExpansionButton buttonTitle='All accounts' buttonWidth={120} ToWhere={() => navigation.navigate('Accounts') }/>;
       }

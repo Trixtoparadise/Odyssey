@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as SecureStore from 'expo-secure-store';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { Divider } from '@rneui/themed';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '@/components/CustomInput';
@@ -53,6 +53,16 @@ export default function CreateBeneficiary({navigation}) {
     handleUserData();
   }, []);
 
+  const createTwoButtonAlert = () =>
+      Alert.alert('Add beneficiary', 'Are you sure you want to add beneficiary?', [
+        {
+          text: 'Cancel',
+          onPress: () => {return;},
+          style: 'cancel',
+        },
+        {text: 'OK', onPress: CreateBeneficiary},
+      ]);
+
   const CreateBeneficiary = async () => {
 
     let headersList = {
@@ -90,7 +100,7 @@ export default function CreateBeneficiary({navigation}) {
         <CustomInput Title='Beneficiary account number' placeholder='Enter account number' value={accountNumber} onChange={text => setAccountNumber(text)} />
         <CustomInput Title='Beneficiary bank ' placeholder='Enter your bank name' value={bank} onChange={text => setBank(text)} />
                
-        <CustomButton  buttonTitle='Continue' ToWhere={CreateBeneficiary}/>
+        <CustomButton  buttonTitle='Continue' ToWhere={createTwoButtonAlert}/>
         
       </View>
     </View>

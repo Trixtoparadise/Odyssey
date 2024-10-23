@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Alert } from 'react-native';
 import { Divider } from '@rneui/themed';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '@/components/CustomInput';
@@ -62,6 +62,16 @@ export default function OpenAccount({navigation}) {
     handleUserData();
   }, []);
 
+  const createTwoButtonAlert = () =>
+    Alert.alert('Open Account', 'Are you sure you want to open account?', [
+      {
+        text: 'Cancel',
+        onPress: () => {return;},
+        style: 'cancel',
+      },
+      {text: 'OK', onPress: OpenAccount},
+    ]);
+
   const OpenAccount = async () => {
 
     let headersList = {
@@ -112,7 +122,7 @@ export default function OpenAccount({navigation}) {
                     placeholder='Select an account type'
           />
           <CustomInput s433ecureTextEntry={true} Title='PIN code' placeholder='Enter your PIN code' value={pin} onChange={text => setPin(text)} />       
-          <CustomButton  buttonTitle='Continue' ToWhere={OpenAccount}/>
+          <CustomButton  buttonTitle='Continue' ToWhere={createTwoButtonAlert}/>
           
         </View>
       </View>

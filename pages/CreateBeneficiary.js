@@ -19,9 +19,9 @@ export default function CreateBeneficiary({navigation}) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState(null);
   const [items, setItems] = React.useState([
-    {label: 'Odyssey Bank', value: 'Odyssey bank'},
-    {label: 'Selis Bank', value: 'Selis bank'},
-    {label: 'Lorem Bank', value: 'Lorem bank'},
+    {label: 'Odyssey Bank', value: 'Odyssey Bank'},
+    {label: 'Selis Bank', value: 'Selis Bank'},
+    {label: 'Lorem Bank', value: 'Lorem Bank'},
   ]);
   const [user, setUser] = React.useState(new User("", 0, 0));
   const [beneficiaryName, setBeneficiaryName] = React.useState("");
@@ -71,7 +71,7 @@ export default function CreateBeneficiary({navigation}) {
       ]);
 
   const CreateBeneficiary = async () => {
-
+  
     let headersList = {
       "Content-Type": "application/json"
      }

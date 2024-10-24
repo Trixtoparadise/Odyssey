@@ -45,59 +45,6 @@ class User {
   }
 }
 
-const NotificationsStackScreen = () => {
-  return (
-    <NotificationsStack.Navigator
-            screenOptions={{
-              header: ({ options, route, navigation}) => (
-                <Header
-                  {... options}
-                  headerTitle={(props) => <Logo imageURL='https://i.ibb.co/895CsJY/Logo.png' width={70} height={70} {...props}/>}
-                  headerTitleAlign='center'
-                  headerRight={() => (
-                    <Button
-                      icon={{
-                          name: 'user',
-                          type: 'feather',
-                          size: 40,
-                          color: 'rgba(0, 44, 106, 255)',
-                      }}
-                      onPress={() => navigation.navigate('Profile')}
-                      type="clear"
-                      TouchableComponent={TouchableOpacity}
-                      containerStyle={{
-                          width: 80,
-                          alignSelf: 'right',
-                      }}                
-                    />
-                  )}
-                  headerLeft={() => (
-                    <Button
-                      icon={{
-                          name: 'arrowleft',
-                          type: 'antdesign',
-                          size: 40,
-                          color: 'rgba(0, 44, 106, 255)',
-                      }}
-                      onPress={() => navigation.goBack()}
-                      type="clear"
-                      TouchableComponent={TouchableOpacity}
-                      containerStyle={{
-                          width: 80,
-                          alignSelf: 'left',
-                      }}                
-                    />
-                  )}
-                  headerStatusBarHeight={10}
-                />
-              ),
-            }}
-    >
-        <NotificationsStack.Screen name="notifications" component={Notifications} />
-    </NotificationsStack.Navigator>
-  );
-}
-
 function SplashScreen() {
   return (
     <View style={styles.splashContainer}>
@@ -478,7 +425,6 @@ const HomeTabs = ({ navigation }) => {
 
       <Tab.Screen 
         name="Notifications" 
-        component={NotificationsStackScreen}
         options={{
           headerShown :  false,
           tabBarIcon: ({ color }) => (
@@ -492,7 +438,56 @@ const HomeTabs = ({ navigation }) => {
           ),
         }}
       >
-
+        {() => (
+          <NotificationsStack.Navigator
+                  screenOptions={{
+                    header: ({ options, route, navigation}) => (
+                      <Header
+                        {... options}
+                        headerTitle={(props) => <Logo imageURL='https://i.ibb.co/895CsJY/Logo.png' width={70} height={70} {...props}/>}
+                        headerTitleAlign='center'
+                        headerRight={() => (
+                          <Button
+                            icon={{
+                                name: 'user',
+                                type: 'feather',
+                                size: 40,
+                                color: 'rgba(0, 44, 106, 255)',
+                            }}
+                            onPress={() => navigation.navigate('Profile')}
+                            type="clear"
+                            TouchableComponent={TouchableOpacity}
+                            containerStyle={{
+                                width: 80,
+                                alignSelf: 'right',
+                            }}                
+                          />
+                        )}
+                        headerLeft={() => (
+                          <Button
+                            icon={{
+                                name: 'arrowleft',
+                                type: 'antdesign',
+                                size: 40,
+                                color: 'rgba(0, 44, 106, 255)',
+                            }}
+                            onPress={() => navigation.goBack()}
+                            type="clear"
+                            TouchableComponent={TouchableOpacity}
+                            containerStyle={{
+                                width: 80,
+                                alignSelf: 'left',
+                            }}                
+                          />
+                        )}
+                        headerStatusBarHeight={10}
+                      />
+                    ),
+                  }}
+          >
+              <NotificationsStack.Screen name="notifications" component={Notifications} />
+          </NotificationsStack.Navigator>
+        )}
       </Tab.Screen>
     </Tab.Navigator>
   );

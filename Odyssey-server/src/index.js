@@ -277,26 +277,64 @@ app.post("/api/addbeneficiary", async (req, res) => {
     return res.status(400).send("All fields required");
   }
 
-  try {
-    const exAccountNumber = await prisma.beneficiary.findUnique({
-      where: {
-        Account_number: accountNumber
-      }
-    });
-
-    if (exAccountNumber) {
-      return res.status(400).send('Account already exists');
-    }
-
-    const beneficiary = await prisma.beneficiary.create({
-      data: { Bank: bank, Account_number: accountNumber, Beneficiary_name: beneficiaryName, User_ID: id }
-    });
-
-    res.status(200).json({ beneficiary });
+  if (bank == "Odyssey Bank") {
+    const benAcc = await prisma.account.findFirst({
+      where: {Account_number: accountNumber}
+    })
     
-  } catch (error) {
-    res.status(500).send('Internal server error');
+    if (!benAcc) {
+      res.status(400).send("Account doesn't exist")
+    } 
+
+    if (benAcc) {
+      if (benAcc.Account_holder_Id == id) {
+        res.status(400).send("This account belongs to you!")
+      } else {
+        try {
+          const exAccountNumber = await prisma.beneficiary.findUnique({
+            where: {
+              Account_number: benAcc.Account_number
+            }
+          });
+      
+          if (exAccountNumber) {
+            return res.status(400).send('Account already exists');
+          }
+      
+          const beneficiary = await prisma.beneficiary.create({
+            data: { Bank: bank, Account_number: benAcc.Account_number, Beneficiary_name: beneficiaryName, User_ID: id }
+          });
+      
+          res.status(200).json({ beneficiary });
+          
+        } catch (error) {
+          res.status(500).send('Internal server error');
+        }
+      } 
+    }
+  } else {
+    try {
+      const exAccountNumber = await prisma.beneficiary.findUnique({
+        where: {
+          Account_number: accountNumber
+        }
+      });
+  
+      if (exAccountNumber) {
+        return res.status(400).send('Account already exists');
+      }
+  
+      const beneficiary = await prisma.beneficiary.create({
+        data: { Bank: bank, Account_number: accountNumber, Beneficiary_name: beneficiaryName, User_ID: id }
+      });
+  
+      res.status(200).json({ beneficiary });
+      
+    } catch (error) {
+      res.status(500).send('Internal server error');
+    }
   }
+
 });
 
 app.post("/api/getbeneficiary", async (req, res) => {
@@ -370,7 +408,25 @@ app.put("/api/makeaccountpayment", async (req, res) => {
 });
 
 app.put("/api/makebeneficiarypayment", async (req, res) => {
-  const { bank, accountNumber, amount, balance } = req.body;
+  const { bank, recAccountNumber ,accountNumber, amount, balance } = req.body;
+
+  if (bank == "Odyssey Bank") {
+    const benAcc = await prisma.account.findFirst({
+      where: {Account_number: recAccountNumber}
+    });
+    if (benAcc) {
+      try {
+        const updatedBalance = await prisma.account.update({
+            where: { Account_number: benAcc.Account_number },
+            data: { Balance: parseFloat(benAcc.Balance) + parseFloat(amount)}
+        });
+  
+        res.status(200).json(updatedBalance);
+      } catch (error) {
+          res.status(500).send("Oops, something went wrong");
+      }
+    }
+  }
 
   if (!accountNumber || !amount) {
       return res.status(400).send("All fields are required");

@@ -1,7 +1,7 @@
 import React from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { Divider } from '@rneui/themed';
-import { FlatList, Text, StatusBar, StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { FlatList, Text, StatusBar, StyleSheet, View, ActivityIndicator } from 'react-native';
 import CustomHeading from '../components/CustomHeading';
 import CustomSearchBar from '../components/CustomSearchBar';
 import NotificationInfo from '../components/NotificationInfo';
@@ -14,7 +14,7 @@ class User {
     }
 }
 
-const Notifications = () => {
+const Notifications = ({navigation}) => {
     const [data, setData] = React.useState([]);
     const [emp, setEmp] = React.useState("");
     const [searchText, setSearchText] = React.useState("");
@@ -43,7 +43,7 @@ const Notifications = () => {
             </View>
         );
     };
- 
+
     React.useEffect(() => {
         async function handleUserData () {
             let userToken = null;
@@ -109,17 +109,32 @@ const Notifications = () => {
     handleAccounts();
 
     if (data.length == 0 && emp == "") {
-        return (
-            <View style={{backgroundColor: 'white', width: '100%', height: '100%' }}>
-                <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
-                <View style={styles.splashContainer}>
-                    <Text style={{marginHorizontal: 30, fontSize: 22, marginBottom: 20, marginTop: 230, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
-                        Please Wait
-                    </Text>
-                <ActivityIndicator size="large" color="rgba(0, 44, 106, 255)" />
+        if (emp == "") {
+            return (
+                <View style={{backgroundColor: 'white', width: '100%', height: '100%' }}>
+                    <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+                    <View style={styles.splashContainer}>
+                        <Text style={{marginHorizontal: 30, fontSize: 22, marginBottom: 20, marginTop: 230, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
+                            Please Wait
+                        </Text>
+                    <ActivityIndicator size="large" color="rgba(0, 44, 106, 255)" />
+                    </View>
                 </View>
-            </View>
-        );
+            );
+        }
+
+        if (emp == 'No notifications') {
+            return (
+                <View style={{backgroundColor: 'white', width: '100%', height: '100%' }}>
+                    <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+                    <View style={styles.splashContainer}>
+                        <Text style={{marginHorizontal: 30, fontSize: 22, marginBottom: 20, marginTop: 230, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
+                            No notifications
+                        </Text>
+                    </View>
+                </View>
+            );
+        }
     } else if (data.length !=0) {
         return (
             <>
@@ -137,18 +152,7 @@ const Notifications = () => {
                 </View>
             </> 
         );
-    } else if (data.length == 0 && emp == 'No notifications') {
-        return (
-            <View style={{backgroundColor: 'white', width: '100%', height: '100%' }}>
-                <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
-                <View style={styles.splashContainer}>
-                    <Text style={{marginHorizontal: 30, fontSize: 22, marginBottom: 20, marginTop: 230, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
-                        No notifications
-                    </Text>
-                </View>
-            </View>
-        );
-    }
+    } 
 }
 
 const styles = StyleSheet.create({

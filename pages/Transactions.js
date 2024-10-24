@@ -115,17 +115,33 @@ const Transactions = ({navigation}) => {
     handleAccounts();
     
     if (data.length == 0 && emp == "") {
-        return (
-            <View style={{backgroundColor: 'white', width: '100%', height: '100%' }}>
-                <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
-                <View style={styles.splashContainer}>
-                    <Text style={{marginHorizontal: 30, fontSize: 22, marginBottom: 20, marginTop: 220, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
-                        Please Wait
-                    </Text>
-                <ActivityIndicator size="large" color="rgba(0, 44, 106, 255)" />
+        if (emp == "") {
+            return (
+                <View style={{backgroundColor: 'white', width: '100%', height: '100%' }}>
+                    <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+                    <View style={styles.splashContainer}>
+                        <Text style={{marginHorizontal: 30, fontSize: 22, marginBottom: 20, marginTop: 220, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
+                            Please Wait
+                        </Text>
+                    <ActivityIndicator size="large" color="rgba(0, 44, 106, 255)" />
+                    </View>
                 </View>
-            </View>
-        );
+            );
+        } 
+
+        if (emp == 'No transactions') {
+            return (
+                <View style={{backgroundColor: 'white', width: '100%', height: '100%' }}>
+                    <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
+                    <View style={styles.splashContainer}>
+                        <Text style={{marginHorizontal: 30, fontSize: 22, marginBottom: 20, marginTop: 230, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
+                            No transactions
+                        </Text>
+                    </View>
+                </View>
+            );
+        }
+
     } else if (data.length !=0) {
         return (
             <>
@@ -142,17 +158,6 @@ const Transactions = ({navigation}) => {
                     </View>
                 </View>
             </> 
-        );
-    } else if (data.length == 0 && emp == 'No transactions') {
-        return (
-            <View style={{backgroundColor: 'white', width: '100%', height: '100%' }}>
-                <Divider width={1} style={{ marginTop: 12, opacity: 10}} />
-                <View style={styles.splashContainer}>
-                    <Text style={{marginHorizontal: 30, fontSize: 22, marginBottom: 20, marginTop: 230, alignSelf: 'center', color: 'rgba(0, 44, 106, 255)'}}>
-                        No transactions
-                    </Text>
-                </View>
-            </View>
         );
     }
 

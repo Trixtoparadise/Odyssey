@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Divider } from '@rneui/themed';
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import CustomButton from '../components/CustomButton';
 import CustomInput from '@/components/CustomInput';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -67,6 +67,8 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
       }
       
       let bodyContent = JSON.stringify({
+        "bank": Bank,
+        "recAccountNumber": Account_number,
         "accountNumber": value, 
         "amount": parseFloat(amount), 
         "balance": bal.balance, 

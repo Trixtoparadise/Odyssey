@@ -33,8 +33,6 @@ const ViewBeneficiary = ({route, navigation}) => {
             headers: headersList
             });
             navigation.navigate('Beneficiaries');
-            let data = await response.text();
-            console.log(data);
         } catch (e) {
         console.log(e);
         }

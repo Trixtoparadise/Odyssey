@@ -82,19 +82,23 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
         });
         
         let data = await response.json();
-        
         if ( response.status == 200 ) {
-          RecordTransaction(data.Balance, bal.member);
-          createNotification(User_Id, amount, bal.member, Account_holder);
+          if (Bank == "Odyssey Bank") {
+            console.log(data.updatedBalance.Balance, data.updatedRecBalance.Balance, amount, bal.member, Account_holder, value, Account_number, ref)
+            RecordAccountTransaction(data.updatedBalance.Balance, data.updatedRecBalance.Balance, amount, bal.member, Account_holder, value, Account_number, ref);
+            createNotification(User_Id, amount, bal.member, Account_holder, ref);
+          } else {
+            RecordBeneficiaryTransaction(data.updatedBalance.Balance, amount, bal.member, value, ref);
+            createNotification(User_Id, amount, bal.member, Account_holder, ref);
+          }
           navigation.navigate('PaymentSuccessful');
         }  
-        
       } catch (e) {
         console.log(e);
       }
     }
 
-    const RecordTransaction = async (balance, member) => {
+    const RecordBeneficiaryTransaction = async (balance, amount, member, accountNumber, reference) => {
       let headersList = {
         "Content-Type": "application/json"
       }
@@ -103,12 +107,39 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
         "balance": balance,
         "amount": amount, 
         "member": member,
-        "accountNumber": value,
-        "reference": ref
+        "accountNumber": accountNumber,
+        "reference": reference
       });
        
       try {
         let response = await fetch("http://10.10.17.11:5000/api/recordbeneficiaryTransaction", { 
+          method: "POST",
+          body: bodyContent,
+          headers: headersList
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    const RecordAccountTransaction = async (balance, recBalance, amount, member, accountHolder, accountNumber, recAccountNumber, reference) => {
+      let headersList = {
+        "Content-Type": "application/json"
+      }
+       
+      let bodyContent = JSON.stringify({
+        "balance": balance,
+        "recBalance": recBalance,  
+        "amount": amount, 
+        "member": member, 
+        "recMember": accountHolder, 
+        "accountNumber": accountNumber, 
+        "recAccountNumber": recAccountNumber, 
+        "reference": reference
+      });
+       
+      try {
+        let response = await fetch("http://10.10.17.11:5000/api/recordAccountTransaction", { 
           method: "POST",
           body: bodyContent,
           headers: headersList
@@ -119,17 +150,18 @@ const BeneficiaryTransferDetails = ({route, navigation}, props) => {
       }
     }
   
-    const createNotification = async (id, amount, member, recMember) => {
+    const createNotification = async (id, amount, member, recMember, reference) => {
       let headersList = {
         "Content-Type": "application/json"
        }
        
        let bodyContent = JSON.stringify({
-         "id": id, 
+         "id": id,
+         "recAccountNumber": Account_number,
          "amount": amount, 
          "member": member, 
          "recMember": recMember,
-         "reference": ref
+         "reference": reference
        });
 
        try {

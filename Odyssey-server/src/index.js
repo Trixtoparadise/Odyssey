@@ -417,57 +417,64 @@ app.put("/api/makebeneficiarypayment", async (req, res) => {
     if (benAcc) {
       try {
         const updatedBalance = await prisma.account.update({
+          where: { Account_number: accountNumber },
+          data: { Balance: parseFloat(balance) - parseFloat(amount)}
+        });
+
+        const updatedRecBalance = await prisma.account.update({
             where: { Account_number: benAcc.Account_number },
             data: { Balance: parseFloat(benAcc.Balance) + parseFloat(amount)}
         });
   
-        res.status(200).json(updatedBalance);
+        res.status(200).json({ updatedBalance, updatedRecBalance });
       } catch (error) {
           res.status(500).send("Oops, something went wrong");
       }
     }
+  } else {
+    if (!accountNumber || !amount) {
+        return res.status(400).send("All fields are required");
+    }
+  
+    if (parseFloat(amount) > parseFloat(balance)) {
+        return res.status(400).send("Insufficient funds")
+    }
+    
+    try {
+        const updatedBalance = await prisma.account.update({
+            where: { Account_number: accountNumber },
+            data: { Balance: parseFloat(balance) - parseFloat(amount)}
+        });
+  
+        res.status(200).json(updatedBalance);
+    } catch (error) {
+        res.status(500).send("Oops, something went wrong");
+    }
   }
 
-  if (!accountNumber || !amount) {
-      return res.status(400).send("All fields are required");
-  }
 
-  if (parseFloat(amount) > parseFloat(balance)) {
-      return res.status(400).send("Please enter a valid amount")
-  }
-
-  try {
-      const updatedBalance = await prisma.account.update({
-          where: { Account_number: accountNumber },
-          data: { Balance: parseFloat(balance) - parseFloat(amount)}
-      });
-
-      res.status(200).json(updatedBalance);
-  } catch (error) {
-      res.status(500).send("Oops, something went wrong");
-  }
 });
 
 app.post("/api/recordAccountTransaction", async (req, res) => {
   const { balance, recBalance, amount, member, recMember, accountNumber, recAccountNumber, reference } = req.body;
 
-  if ( !balance || !amount || !member || !accountNumber || !recBalance || !recMember || !recAccountNumber ) {
+  if ( !balance || !recBalance || !amount || !member || !accountNumber || !recMember || !recAccountNumber || !reference) {
     return res.status(400).send("Error recording transaction");
-  }
+  } else {
+    try {
+      const transaction = await prisma.transaction.create({
+        data: { Date: new Date(), Balance: parseFloat(balance) , Amount: amount, Member: member, Account_number: accountNumber, Sent_Received: "-", Reference: reference },
+      });
   
-  try {
-    const transaction = await prisma.transaction.create({
-      data: { Date: new Date(), Balance: parseFloat(balance) , Amount: amount, Member: member, Account_number: accountNumber, Sent_Received: "-", Reference: reference },
-    });
-
-    const recTransaction = await prisma.transaction.create({
-      data: { Date: new Date(), Balance: parseFloat(recBalance) , Amount: amount, Member: recMember, Account_number: recAccountNumber, Sent_Received: "+", Reference: reference},
-    })
-
-    res.status(200).json({transaction, recTransaction});
-
-  } catch (error) {
-    res.status(500).send('Internal server error!');
+      const recTransaction = await prisma.transaction.create({
+        data: { Date: new Date(), Balance: parseFloat(recBalance) , Amount: amount, Member: recMember, Account_number: recAccountNumber, Sent_Received: "+", Reference: reference},
+      });
+  
+      res.status(200).json({transaction, recTransaction});
+  
+    } catch (error) {
+      res.status(500).send('Internal server error!');
+    }
   }
 });
 
@@ -480,7 +487,7 @@ app.post("/api/recordBeneficiaryTransaction", async (req, res) => {
   
   try {
     const transaction = await prisma.transaction.create({
-      data: { Date: new Date(), Balance: parseFloat(balance) - parseFloat(amount), Amount: amount, Member: member, Account_number: accountNumber, Sent_Received: "-", Reference: reference },
+      data: { Date: new Date(), Balance: parseFloat(balance), Amount: amount, Member: member, Account_number: accountNumber, Sent_Received: "-", Reference: reference },
     });
 
     res.status(200).json({transaction});
@@ -507,7 +514,15 @@ app.post("/api/getTransactions",  async (req, res) => {
     if (transactions.length == 0) {
       res.status(200).send('No transactions'); 
     } else if (transactions.length > 0) {
-      let statements = transactions.flat().map((transaction) => {return {Ref: transaction.Reference, Date: transaction.Date.toDateString(), Description: transaction.Sent_Received + " R" + transaction.Amount, Time: transaction.Date.toLocaleTimeString(), Balance: transaction.Balance ,id: transaction.Transaction_ID, member: transaction.Member, title:"AccNo: "  + transaction.Account_number + " , " + transaction.Sent_Received + " R" + transaction.Amount +" "+ "\n" + "Ref: " + transaction.Reference + ", " + transaction.Member + "\n" + transaction.Date}});
+      
+      let statements = transactions.flat();
+      statements = statements.sort((a,b) => {
+        let da = new Date(a.Date),
+            db = new Date(b.Date);
+        return da - db;
+      });
+
+      statements = statements.flat().map((transaction) => {return {Ref: transaction.Reference, Date: transaction.Date.toDateString(), Description: transaction.Sent_Received + " R" + transaction.Amount, Time: transaction.Date.toLocaleTimeString(), Balance: transaction.Balance ,id: transaction.Transaction_ID, member: transaction.Member, title:"AccNo: "  + transaction.Account_number + " , " + transaction.Sent_Received + " R" + transaction.Amount +" "+ "\n" + "Ref: " + transaction.Reference + ", " + transaction.Member + "\n" + transaction.Date}});
       res.status(200).json(statements);
     }
   } catch (error) {
@@ -518,26 +533,31 @@ app.post("/api/getTransactions",  async (req, res) => {
 
 
 app.post("/api/createNotification", async (req, res) => {
-  const { id, recId, amount, member, recMember, reference } = req.body;
+  const { id, recAccountNumber, amount, member, recMember, reference } = req.body;
   
-  if (!id && recId) {
-    res.status(400).send('No IDs available');
-  }
-
-  try {
-    if (!recId) {
-      const notification = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "-" + "R" + amount + ". Ref: " + reference + ", " + member + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: id}});
-      res.status(200).json(notification);
-    }  
-
-    if (id && recId) {
-      const notification = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "-" + "R" + amount + ". Ref: " + reference + ", " + member + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: id}});
-      const notification2 = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "+" + "R" + amount + ". Ref: " + reference + ", " + recMember + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: recId}});
-      res.status(200).json({ notification, notification2 });
+  if (!id || !recAccountNumber || !amount || !member || !recMember || !reference ) {
+    res.status(400).send('All fields required');
+  } else {
+    try {
+      const recId = await prisma.account.findFirst({
+        where: {Account_number: recAccountNumber}
+      })
+  
+      if (!recId.Account_holder_Id) {
+        const notification = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "-" + "R" + amount + ". Ref: " + reference + ", " + member + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: id}});
+        res.status(200).json(notification);
+      }  
+  
+      if (id && recId) {
+        const notification = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "-" + "R" + amount + ". Ref: " + reference + ", " + member + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: id}});
+        const notification2 = await prisma.notification.create({data: { Message: "Odyssey Bank Notification: " + "+" + "R" + amount + ". Ref: " + reference + ", " + recMember + ", " + new Date().toDateString() + ", " + new Date().toLocaleTimeString() , ID_number: recId.Account_holder_Id}});
+        res.status(200).json({ notification, notification2 });
+      }
+    } catch (e) {
+      res.status(500).send('Internal server error');
     }
-  } catch (e) {
-    res.status(500).send('Internal server error');
   }
+
 });
 
 app.post("/api/getNotifications",  async (req, res) => {
